@@ -1,7 +1,10 @@
-from src.logger import logging
+# train_set, test_set = train_test_split( dataframe,test_size=self.data_ingestion_config.train_test_split_ratio, random_state=42)
 
-logging.debug("This is a debug message.")
-logging.info("This is an info message.")
-logging.warning("This is a warning message.")
-logging.error("This is an error message.")
-logging.critical("This is a critical message.")
+
+from src.pipline.training_pipeline import TrainPipeline
+
+pipeline = TrainPipeline()
+
+artifact = pipeline.start_data_ingestion()
+
+print(artifact)
