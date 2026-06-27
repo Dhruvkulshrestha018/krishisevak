@@ -3,8 +3,5 @@
 
 from src.pipline.training_pipeline import TrainPipeline
 
-pipeline = TrainPipeline()
-
-artifact = pipeline.start_data_ingestion()
-
-print(artifact)
+pipline = TrainPipeline()
+pipline.run_pipeline()

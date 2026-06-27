@@ -1,0 +1,26 @@
+columns:
+  N: int
+  P: int
+  K: int
+  temperature: float
+  humidity: float
+  ph: float
+  rainfall: float
+  label: category
+
+target_column: label
+
+numerical_columns:
+  - N
+  - P
+  - K
+  - temperature
+  - humidity
+  - ph
+  - rainfall
+
+categorical_columns:
+  - label
+
+drop_columns:
+  - _id
