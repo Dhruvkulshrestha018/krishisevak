@@ -11,12 +11,14 @@ class MyModel:
 
     def __init__(
         self,
-        preprocessing_object: Pipeline,
-        trained_model_object: object
+        preprocessing_object,
+        trained_model_object,
+        label_encoder
     ):
 
         self.preprocessing_object = preprocessing_object
         self.trained_model_object = trained_model_object
+        self.label_encoder = label_encoder
 
     def predict(
         self,
@@ -27,14 +29,17 @@ class MyModel:
 
             logging.info("Starting prediction")
 
-            transformed_data = (
-                self.preprocessing_object.transform(dataframe)
+            transformed_data = self.preprocessing_object.transform(
+                dataframe
             )
 
-            prediction = (
-                self.trained_model_object.predict(
-                    transformed_data
-                )
+            prediction = self.trained_model_object.predict(
+                transformed_data
+            )
+
+            # Convert numeric labels back to crop names
+            prediction = self.label_encoder.inverse_transform(
+                prediction.astype(int)
             )
 
             return prediction

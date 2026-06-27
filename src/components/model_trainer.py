@@ -18,7 +18,7 @@ class ModelTrainer:
     def __init__(
         self,
         data_transformation_artifact: DataTransformationArtifact,
-        model_trainer_config: ModelTrainerConfig
+        model_trainer_config: ModelTrainerConfig,
     ):
 
         self.data_transformation_artifact = (
@@ -30,14 +30,12 @@ class ModelTrainer:
         )
 
     def initiate_model_trainer(
-        self
+        self,
     ) -> ModelTrainerArtifact:
 
         try:
 
-            logging.info(
-                "Loading transformed train and test arrays"
-            )
+            logging.info("Loading transformed train/test arrays")
 
             train_arr = load_numpy_array_data(
                 self.data_transformation_artifact.transformed_train_file_path
@@ -53,9 +51,7 @@ class ModelTrainer:
             X_test = test_arr[:, :-1]
             y_test = test_arr[:, -1]
 
-            logging.info(
-                "Training Random Forest model"
-            )
+            logging.info("Training RandomForestClassifier")
 
             model = RandomForestClassifier(
                 n_estimators=200,
@@ -89,36 +85,49 @@ class ModelTrainer:
                 average="weighted"
             )
 
-            logging.info(
-                f"Accuracy : {accuracy}"
+            metric_artifact = ClassificationMetricArtifact(
+                accuracy_score=accuracy,
+                precision_score=precision,
+                recall_score=recall,
+                f1_score=f1,
             )
 
-            metric_artifact = (
-                ClassificationMetricArtifact(
-                    accuracy_score=accuracy,
-                    f1_score=f1,
-                    precision_score=precision,
-                    recall_score=recall
-                )
+            logging.info(
+                f"Accuracy : {accuracy:.4f}"
+            )
+
+            logging.info(
+                "Loading preprocessing objects"
+            )
+
+            transformer = load_object(
+                self.data_transformation_artifact.transformed_object_file_path
+            )
+
+            preprocessor = transformer["preprocessor"]
+
+            label_encoder = transformer["label_encoder"]
+
+            final_model = MyModel(
+                preprocessing_object=preprocessor,
+                trained_model_object=model,
+                label_encoder=label_encoder,
             )
 
             save_object(
                 self.model_trainer_config.trained_model_file_path,
-                model
+                final_model,
+            )
+
+            logging.info("Final model saved successfully")
+
+            model_trainer_artifact = ModelTrainerArtifact(
+                trained_model_file_path=self.model_trainer_config.trained_model_file_path,
+                metric_artifact=metric_artifact,
             )
 
             logging.info(
-                "Model saved successfully"
-            )
-
-            model_trainer_artifact = (
-                ModelTrainerArtifact(
-                    trained_model_file_path=
-                    self.model_trainer_config.trained_model_file_path,
-
-                    metric_artifact=
-                    metric_artifact
-                )
+                f"Model Trainer Artifact : {model_trainer_artifact}"
             )
 
             return model_trainer_artifact

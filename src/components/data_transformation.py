@@ -189,7 +189,10 @@ class DataTransformation:
 
             save_object(
                 self.data_transformation_config.transformed_object_file_path,
-                preprocessor
+                {
+                    "preprocessor": preprocessor,
+                    "label_encoder": label_encoder
+                }
             )
 
             save_numpy_array_data(
