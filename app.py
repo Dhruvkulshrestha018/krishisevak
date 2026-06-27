@@ -1,160 +1,200 @@
-# import os
-# from pymongo import MongoClient
-# from dotenv import load_dotenv
+from typing import Optional
 
-# # Load variables from the .env file
-# load_dotenv()
+from fastapi import FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import Response
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
+from uvicorn import run as app_run
 
-# # Fetch the URL
-# mongo_url = os.getenv("MONGODB_URL")
-
-# # Debugging check: Ensure Python is actually reading the string
-# if not mongo_url:
-#     raise ValueError("❌ MONGODB_URL is missing from your .env file!")
-
-# # Connect to MongoDB
-# client = MongoClient(mongo_url)
-
-# try:
-#     response = client.admin.command("ping")
-#     print(" Pinged your deployment. You successfully connected to MongoDB!")
-#     print(f"Server Response: {response}")
-# except Exception as e:
-#     print(f"❌ Connection failed: {e}")
-# import pandas as pd
-
-# train_df = pd.read_csv(
-#     "/Users/dhruvkulshrestha/Desktop/Smakrishi_proto/krishisevak/artifact/06_27_2026_09_23_26/data_ingestion/ingested/train.csv"
-# )
-
-# print(train_df["label"].head())
+from src.constants import APP_HOST, APP_PORT
+from src.pipline.prediction_pipeline import CropData, CropPredictor
+from src.pipline.training_pipeline import TrainPipeline
 
 
+# ==========================================
+# Initialize FastAPI App
+# ==========================================
 
-# import sys
-# from typing import Tuple
+app = FastAPI(title="KrishiLink Crop Recommendation System")
 
-# import numpy as np
-# from sklearn.ensemble import RandomForestClassifier
-# from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
+# Static files (CSS, JS, Images)
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
-# from src.exception import MyException
-# from src.logger import logging
-# from src.utils.main_utils import load_numpy_array_data, load_object, save_object
-# from src.entity.config_entity import ModelTrainerConfig
-# from src.entity.artifact_entity import DataTransformationArtifact, ModelTrainerArtifact, ClassificationMetricArtifact
-# from src.entity.estimator import MyModel
+# Templates
+templates = Jinja2Templates(directory="templates")
+
+# ==========================================
+# CORS Configuration
+# ==========================================
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
-# class ModelTrainer:
+# ==========================================
+# Form Data Class
+# ==========================================
 
-#     def __init__(
-#         self,
-#         data_transformation_artifact: DataTransformationArtifact,
-#         model_trainer_config: ModelTrainerConfig
-#     ):
+class DataForm:
 
-#         self.data_transformation_artifact = (
-#             data_transformation_artifact
-#         )
+    def __init__(self, request: Request):
 
-#         self.model_trainer_config = (
-#             model_trainer_config
-#         )
+        self.request = request
 
-#     def initiate_model_trainer(
-#         self
-#     ) -> ModelTrainerArtifact:
+        self.N: Optional[int] = None
+        self.P: Optional[int] = None
+        self.K: Optional[int] = None
 
-#         try:
+        self.temperature: Optional[float] = None
+        self.humidity: Optional[float] = None
+        self.ph: Optional[float] = None
+        self.rainfall: Optional[float] = None
 
-#             logging.info(
-#                 "Loading transformed train and test arrays"
-#             )
+    async def get_crop_data(self):
 
-#             train_arr = load_numpy_array_data(
-#                 self.data_transformation_artifact.transformed_train_file_path
-#             )
+        form = await self.request.form()
 
-#             test_arr = load_numpy_array_data(
-#                 self.data_transformation_artifact.transformed_test_file_path
-#             )
+        self.N = int(form.get("N"))
+        self.P = int(form.get("P"))
+        self.K = int(form.get("K"))
 
-#             X_train = train_arr[:, :-1]
-#             y_train = train_arr[:, -1]
+        self.temperature = float(form.get("temperature"))
+        self.humidity = float(form.get("humidity"))
+        self.ph = float(form.get("ph"))
+        self.rainfall = float(form.get("rainfall"))
 
-#             X_test = test_arr[:, :-1]
-#             y_test = test_arr[:, -1]
 
-#             logging.info(
-#                 "Training Random Forest model"
-#             )
+# ==========================================
+# Home Page
+# ==========================================
 
-#             model = RandomForestClassifier(
-#                 n_estimators=200,
-#                 random_state=42
-#             )
+@app.get("/", response_class=Response)
+async def home(request: Request):
 
-#             model.fit(X_train, y_train)
+    return templates.TemplateResponse(
+        "index.html",
+        {
+            "request": request,
+            "prediction": None
+        }
+    )
 
-#             y_pred = model.predict(X_test)
 
-#             accuracy = accuracy_score(
-#                 y_test,
-#                 y_pred
-#             )
+# ==========================================
+# Train Model Endpoint
+# ==========================================
 
-#             precision = precision_score(
-#                 y_test,
-#                 y_pred,
-#                 average="weighted"
-#             )
+@app.get("/train")
+async def train_model():
 
-#             recall = recall_score(
-#                 y_test,
-#                 y_pred,
-#                 average="weighted"
-#             )
+    try:
 
-#             f1 = f1_score(
-#                 y_test,
-#                 y_pred,
-#                 average="weighted"
-#             )
+        train_pipeline = TrainPipeline()
 
-#             logging.info(
-#                 f"Accuracy : {accuracy}"
-#             )
+        train_pipeline.run_pipeline()
 
-#             metric_artifact = (
-#                 ClassificationMetricArtifact(
-#                     accuracy_score=accuracy,
-#                     f1_score=f1,
-#                     precision_score=precision,
-#                     recall_score=recall
-#                 )
-#             )
+        return Response(
+            content="Training completed successfully!",
+            media_type="text/plain"
+        )
 
-#             save_object(
-#                 self.model_trainer_config.trained_model_file_path,
-#                 model
-#             )
+    except Exception as e:
 
-#             logging.info(
-#                 "Model saved successfully"
-#             )
+        return Response(
+            content=f"Training Failed\n\n{e}",
+            media_type="text/plain"
+        )
 
-#             model_trainer_artifact = (
-#                 ModelTrainerArtifact(
-#                     trained_model_file_path=
-#                     self.model_trainer_config.trained_model_file_path,
 
-#                     metric_artifact=
-#                     metric_artifact
-#                 )
-#             )
+# ==========================================
+# Prediction Endpoint
+# ==========================================
 
-#             return model_trainer_artifact
+@app.post("/")
+async def predict(request: Request):
 
-#         except Exception as e:
-#             raise MyException(e, sys)
+    try:
+
+        # Read form values
+        form = DataForm(request)
+
+        await form.get_crop_data()
+
+        # Create CropData object
+        crop_data = CropData(
+
+            N=form.N,
+            P=form.P,
+            K=form.K,
+            temperature=form.temperature,
+            humidity=form.humidity,
+            ph=form.ph,
+            rainfall=form.rainfall
+
+        )
+
+        # Convert to DataFrame
+        crop_df = crop_data.get_crop_input_dataframe()
+
+        # Load model and predict
+        predictor = CropPredictor()
+
+        prediction = predictor.predict(crop_df)
+
+        recommended_crop = prediction[0]
+
+        # Render result
+        return templates.TemplateResponse(
+
+            "index.html",
+
+            {
+
+                "request": request,
+
+                "prediction": recommended_crop
+
+            }
+
+        )
+
+    except Exception as e:
+
+        return templates.TemplateResponse(
+
+            "index.html",
+
+            {
+
+                "request": request,
+
+                "prediction": None,
+
+                "error": str(e)
+
+            }
+
+        )
+
+
+# ==========================================
+# Run Server
+# ==========================================
+
+if __name__ == "__main__":
+
+    app_run(
+
+        app,
+
+        host=APP_HOST,
+
+        port=APP_PORT
+
+    )

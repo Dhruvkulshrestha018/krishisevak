@@ -56,14 +56,20 @@ class ModelTrainerConfig:
 class ModelEvaluationConfig:
     changed_threshold_score: float = MODEL_EVALUATION_CHANGED_THRESHOLD_SCORE
     bucket_name: str = MODEL_BUCKET_NAME
-    s3_model_key_path = MODEL_PUSHER_S3_KEY
+    s3_model_key_path: str = MODEL_PUSHER_S3_KEY
 
 @dataclass
 class ModelPusherConfig:
     bucket_name: str = MODEL_BUCKET_NAME
-    s3_model_key_path = MODEL_PUSHER_S3_KEY
+    s3_model_key_path: str = os.path.join(
+        MODEL_PUSHER_S3_KEY,
+        MODEL_FILE_NAME
+    )
 
 @dataclass
 class CropPredictorConfig:
-    model_file_path: str = MODEL_FILE_NAME
     model_bucket_name: str = MODEL_BUCKET_NAME
+    model_file_path: str = os.path.join(
+        MODEL_PUSHER_S3_KEY,
+        MODEL_FILE_NAME
+    )

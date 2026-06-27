@@ -104,6 +104,13 @@ class SimpleStorageService:
         try:
             bucket = self.get_bucket(bucket_name)
             file_objects = [file_object for file_object in bucket.objects.filter(Prefix=filename)]
+
+            print("\n========= ALL FILES IN BUCKET =========")
+
+            for obj in bucket.objects.all():
+                print(obj.key)
+
+            print("=======================================\n")
             func = lambda x: x[0] if len(x) == 1 else x
             file_objs = func(file_objects)
             logging.info("Exited the get_file_object method of SimpleStorageService class")

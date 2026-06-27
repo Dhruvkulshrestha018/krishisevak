@@ -1,0 +1,286 @@
+/* ===========================
+   Google Font
+=========================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Poppins',sans-serif;
+}
+
+/* ===========================
+   Body
+=========================== */
+
+body{
+
+    background:linear-gradient(135deg,#d4fc79,#96e6a1);
+
+    min-height:100vh;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    padding:40px;
+
+}
+
+/* ===========================
+   Main Card
+=========================== */
+
+.container{
+
+    width:100%;
+
+    display:flex;
+
+    justify-content:center;
+
+}
+
+.card{
+
+    width:650px;
+
+    background:#ffffff;
+
+    border-radius:20px;
+
+    padding:40px;
+
+    box-shadow:0px 15px 40px rgba(0,0,0,0.15);
+
+}
+
+/* ===========================
+   Heading
+=========================== */
+
+h1{
+
+    text-align:center;
+
+    color:#2E7D32;
+
+    margin-bottom:8px;
+
+    font-size:38px;
+
+}
+
+.subtitle{
+
+    text-align:center;
+
+    color:#666;
+
+    margin-bottom:35px;
+
+    font-size:16px;
+
+}
+
+/* ===========================
+   Form
+=========================== */
+
+form{
+
+    margin-bottom:20px;
+
+}
+
+.input-group{
+
+    margin-bottom:18px;
+
+}
+
+label{
+
+    display:block;
+
+    margin-bottom:7px;
+
+    color:#333;
+
+    font-weight:500;
+
+}
+
+input{
+
+    width:100%;
+
+    padding:14px;
+
+    border:1px solid #cccccc;
+
+    border-radius:10px;
+
+    font-size:15px;
+
+    transition:.3s;
+
+}
+
+input:focus{
+
+    outline:none;
+
+    border-color:#2E7D32;
+
+    box-shadow:0 0 8px rgba(46,125,50,.25);
+
+}
+
+/* ===========================
+   Buttons
+=========================== */
+
+.predict-btn{
+
+    width:100%;
+
+    padding:15px;
+
+    background:#2E7D32;
+
+    color:white;
+
+    border:none;
+
+    border-radius:10px;
+
+    cursor:pointer;
+
+    font-size:17px;
+
+    font-weight:600;
+
+    transition:.3s;
+
+}
+
+.predict-btn:hover{
+
+    background:#1B5E20;
+
+}
+
+.train-btn{
+
+    width:100%;
+
+    padding:15px;
+
+    background:#1565C0;
+
+    color:white;
+
+    border:none;
+
+    border-radius:10px;
+
+    cursor:pointer;
+
+    font-size:16px;
+
+    font-weight:600;
+
+    transition:.3s;
+
+}
+
+.train-btn:hover{
+
+    background:#0D47A1;
+
+}
+
+/* ===========================
+   Prediction Result
+=========================== */
+
+.prediction-box{
+
+    margin-top:30px;
+
+    background:#E8F5E9;
+
+    border-left:6px solid #2E7D32;
+
+    padding:25px;
+
+    border-radius:12px;
+
+    text-align:center;
+
+}
+
+.prediction-box h2{
+
+    color:#1B5E20;
+
+    margin-bottom:10px;
+
+}
+
+.prediction-box h1{
+
+    color:#2E7D32;
+
+    font-size:42px;
+
+}
+
+/* ===========================
+   Error
+=========================== */
+
+.error-box{
+
+    margin-top:25px;
+
+    background:#ffebee;
+
+    border-left:6px solid #d32f2f;
+
+    padding:20px;
+
+    border-radius:10px;
+
+    color:#b71c1c;
+
+    text-align:center;
+
+}
+
+/* ===========================
+   Responsive
+=========================== */
+
+@media(max-width:768px){
+
+    .card{
+
+        width:100%;
+
+        padding:25px;
+
+    }
+
+    h1{
+
+        font-size:30px;
+
+    }
+
+}
