@@ -1,9 +1,10 @@
 from setuptools import setup, find_packages
 
 setup(
-    name="src",
+    name="krishisevak",
     version="0.0.1",
     author="Dhruv Kulshrestha",
     author_email="dhruvkul2004@gmail.com",
-    packages=find_packages()
+    packages=find_packages(where="src"),
+    package_dir={"": "src"},
 )

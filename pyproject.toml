@@ -1,27 +1,19 @@
 [build-system]
-requires = ["setuptools>=45", "wheel"]
+requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "krishisevak"          # Better name
+name = "krishisevak"
 version = "0.0.1"
-description = "An MLOps project for productionizing models"
-authors = [{name = "Dhruv Kulshrestha", email = "dhruvkul2004@gmail.com"}]
-readme = "README.md"            # optional but recommended
-requires-python = ">=3.8"       # add this
-
-dependencies = [
-    # You can keep using dynamic, or list them here
+description = "Crop Recommendation MLOps Project"
+authors = [
+    {name = "Dhruv Kulshrestha", email = "dhruvkul2004@gmail.com"}
 ]
+readme = "README.md"
+requires-python = ">=3.10"
 
 [tool.setuptools]
-packages = {find = {}}
-package-dir = {"" = "src"}      # if you use src/ layout
+include-package-data = true
 
-# Optional: development dependencies
-[project.optional-dependencies]
-dev = [
-    "ipykernel",
-    "pytest",
-    # etc.
-]
+[tool.setuptools.packages.find]
+where = ["src"]
